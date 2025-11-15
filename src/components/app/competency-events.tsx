@@ -120,7 +120,7 @@ export function CompetencyEvents() {
                 <TableRow>
                   <TableHead>Objective</TableHead>
                   <TableHead className="hidden sm:table-cell">Target Skill</TableHead>
-                  <TableHead className="hidden lg:table-cell">Assessment</TableHead>
+                  <TableHead className="hidden md:table-cell">Assessment</TableHead>
                   <TableHead className="text-right">Action</TableHead>
                 </TableRow>
               </TableHeader>
@@ -129,7 +129,7 @@ export function CompetencyEvents() {
                     <TableRow key={i}>
                         <TableCell><Skeleton className="h-5 w-48" /></TableCell>
                         <TableCell className="hidden sm:table-cell"><Skeleton className="h-5 w-24" /></TableCell>
-                        <TableCell className="hidden lg:table-cell"><Skeleton className="h-5 w-36" /></TableCell>
+                        <TableCell className="hidden md:table-cell"><Skeleton className="h-5 w-36" /></TableCell>
                         <TableCell className="text-right"><Skeleton className="h-8 w-20 ml-auto" /></TableCell>
                     </TableRow>
                 ))}
@@ -141,7 +141,7 @@ export function CompetencyEvents() {
                         {event.Target_Skill}
                       </Badge>
                     </TableCell>
-                    <TableCell className="hidden lg:table-cell text-muted-foreground text-xs">{event.Assessment_Method}</TableCell>
+                    <TableCell className="hidden md:table-cell text-muted-foreground text-xs">{event.Assessment_Method}</TableCell>
                     <TableCell className="text-right">
                       <Button size="sm" variant="outline">Start</Button>
                     </TableCell>
