@@ -1,8 +1,6 @@
 import { Header } from '@/components/app/header';
 import { SkillsGraph } from '@/components/app/skills-graph';
 import { KarmicAlignment } from '@/components/app/karmic-alignment';
-import { CompetencyEvents } from '@/components/app/competency-events';
-import { AiTutor } from '@/components/app/ai-tutor';
 import { NpcMentor } from '@/components/app/npc-mentor';
 import {
   Card,
@@ -16,6 +14,8 @@ import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
 import { Glasses } from 'lucide-react';
+import Link from 'next/link';
+import { BookCheck, Bot } from 'lucide-react';
 
 export default function DashboardPage() {
   const vrImage = PlaceHolderImages.find((img) => img.id === 'vr-training');
@@ -66,11 +66,37 @@ export default function DashboardPage() {
           </Card>
         </div>
         <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
-          <CompetencyEvents />
+          <Card>
+             <CardHeader>
+                <CardTitle className="font-headline">Competencies</CardTitle>
+                <CardDescription>View your AI-generated learning path and track your progress.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">Your personalized Competency-Building Events are ready. Start a quest or begin a new lesson plan.</p>
+              </CardContent>
+              <CardContent>
+                <Button asChild>
+                  <Link href="/competencies"><BookCheck /> View Your Competencies</Link>
+                </Button>
+              </CardContent>
+          </Card>
+           <Card>
+             <CardHeader>
+                <CardTitle className="font-headline">AI Tutor</CardTitle>
+                <CardDescription>Get personalized help from your AI guide, Talos.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground mb-4">Have a question? Talos is available to provide instant feedback and detailed explanations on any topic.</p>
+              </CardContent>
+              <CardContent>
+                <Button asChild>
+                  <Link href="/tutor"><Bot /> Go to AI Tutor</Link>
+                </Button>
+              </CardContent>
+          </Card>
         </div>
-        <div className="grid grid-cols-1 gap-4 md:gap-8 lg:grid-cols-2">
-          <AiTutor />
-          <NpcMentor />
+        <div className="grid grid-cols-1 gap-4 md:gap-8">
+            <NpcMentor />
         </div>
       </main>
     </>
