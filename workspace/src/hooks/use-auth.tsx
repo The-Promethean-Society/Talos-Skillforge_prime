@@ -6,8 +6,8 @@ import {
   GoogleAuthProvider,
   signInWithRedirect,
   signOut,
-  onAuthStateChanged,
   getRedirectResult,
+  onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
@@ -48,7 +48,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       })
       .catch((error) => {
-        console.error('Error getting redirect result:', error);
+        // This can happen if the user signs in and then refreshes the page. It's usually safe to ignore.
+        console.warn('Error getting redirect result:', error.code);
       });
   }, [router]);
 
@@ -81,4 +82,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
