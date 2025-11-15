@@ -1,8 +1,15 @@
 'use client';
 
-// src/hooks/use-auth.tsx
 import { useEffect, useState, useContext, createContext, ReactNode } from 'react';
-import { getAuth, onAuthStateChanged, User, GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth';
+import {
+  getAuth,
+  onAuthStateChanged,
+  User,
+  GoogleAuthProvider,
+  signInWithRedirect,
+  signOut,
+  getRedirectResult,
+} from 'firebase/auth';
 import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 
@@ -34,11 +41,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
+  useEffect(() => {
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          router.push('/dashboard');
+        }
+      })
+      .catch((error) => {
+        console.error('Error getting redirect result:', error);
+      });
+  }, [router]);
+
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
-      router.push('/dashboard');
+      await signInWithRedirect(auth, provider);
     } catch (error) {
       console.error('Error signing in with Google:', error);
     }
