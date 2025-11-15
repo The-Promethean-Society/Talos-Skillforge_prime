@@ -49,6 +49,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       })
       .catch((error) => {
+        // This can happen if the user closes the sign-in window.
+        // It's usually not a critical error to display.
         console.error('Error getting redirect result:', error);
       });
   }, [router]);
