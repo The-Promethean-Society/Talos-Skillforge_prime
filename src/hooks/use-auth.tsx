@@ -10,6 +10,7 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
+import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -28,10 +29,17 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     // This effect runs once on mount to handle the redirect result from Firebase.
     getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          // On successful sign-in redirect, send user to dashboard.
+          router.push('/dashboard');
+        }
+      })
       .catch((error) => {
         // This error can be ignored. It often happens on page load if there's no pending redirect.
         console.warn('Firebase getRedirectResult error on initial load:', error.code);
@@ -44,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [router]);
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
@@ -63,7 +71,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       await signOut(auth);
-      // No need to redirect here, the onAuthStateChanged listener will update the user to null.
+      // On sign out, redirect to the main dashboard which is now public.
+      router.push('/dashboard');
       setLoading(false);
     } catch (error) {
       console.error('Error signing out:', error);
