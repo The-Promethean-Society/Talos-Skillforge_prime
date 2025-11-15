@@ -15,7 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Button } from '@/components/ui/button';
-import { VrHeadset } from 'lucide-react';
+import { Glasses } from 'lucide-react';
 
 export default function DashboardPage() {
   const vrImage = PlaceHolderImages.find((img) => img.id === 'vr-training');
@@ -59,7 +59,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="z-20 mt-auto">
               <Button>
-                <VrHeadset className="mr-2 h-4 w-4" />
+                <Glasses className="mr-2 h-4 w-4" />
                 Enter VR Mode
               </Button>
             </CardContent>
