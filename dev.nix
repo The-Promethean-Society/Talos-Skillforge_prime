@@ -1,25 +1,22 @@
-
-{ pkgs, ... }:
-
-{
-  # Which nixpkgs channel to use.
-  channel = "unstable"; # or "23.05", "22.11", etc.
-
-  # Configure the project environment.
-  env = {
-    # NODE_HOME = "${pkgs.nodejs}/bin/node";
-  };
-
-  # Packages to make available in the environment.
+{ pkgs, ... }: {
   packages = [
-    pkgs.nodejs_20 # Specify Node.js version
-    pkgs.nodePackages.pnpm
-    pkgs.bash-interactive
-    pkgs.docker # Add docker package
+    pkgs.nodejs_20,
+    pkgs.patch-package,
+    pkgs.docker,
   ];
 
-  # Scripts to run when the environment is activated.
-  scripts = {
-    # "my-script" = "echo 'Hello, world!'";
-  };
+  devcontainer.features.docker-in-docker.enable = true;
+
+  enterShell = ''
+    # Ensure Docker daemon is running
+    if ! pgrep -x "dockerd" > /dev/null; then
+      sudo dockerd > /dev/null 2>&1 &
+      # Wait for the docker socket to be available
+      while [ ! -S /var/run/docker.sock ]; do
+        sleep 1
+      done
+      # Set correct permissions for the docker socket
+      sudo chmod 666 /var/run/docker.sock
+    fi
+  '';
 }
