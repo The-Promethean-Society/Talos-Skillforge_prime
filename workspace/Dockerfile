@@ -1,33 +1,25 @@
-# ---- Base Stage ----
-FROM node:20-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-
-# ---- Dependencies Stage ----
-FROM base AS deps
+# Stage 1: Install dependencies
+FROM node:20-slim AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml* ./
-RUN pnpm install --frozen-lockfile --prod=false
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# ---- Builder Stage ----
-FROM base AS builder
+# Stage 2: Build the application
+FROM node:20-slim AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN pnpm build
+RUN npm run build
 
-# ---- Runner Stage ----
-FROM base AS runner
+# Stage 3: Production image
+FROM node:20-slim AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED 1
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
+# Expose port 3000 and start the application
 EXPOSE 3000
-
 CMD ["node", "server.js"]

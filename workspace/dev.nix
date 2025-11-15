@@ -1,24 +1,13 @@
-{ pkgs, ... }: {
-  # https://devenv.sh/basics/
-  name = "skillforge-prime";
-
-  # https://devenv.sh/packages/
+{ pkgs }: {
+  # Installs packages available in the nix channel.
   packages = [
+    # Used for running the Next.js application.
     pkgs.nodejs_20
-    pkgs.patch-package
+
+    # Required for the `patch-package` script.
+    pkgs.patch
+
+    # Required for building and running Docker containers.
     pkgs.docker
   ];
-
-  # https://devenv.sh/languages/
-  languages.javascript.enable = true;
-
-  # https://devenv.sh/scripts/
-  scripts.npm-install.exec = "npm install";
-
-  enterShell = ''
-    npm install
-  '';
-
-  # https://devenv.sh/services/
-  # services.postgres.enable = true;
 }
