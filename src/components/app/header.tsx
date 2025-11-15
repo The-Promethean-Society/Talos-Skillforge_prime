@@ -13,19 +13,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
+import { LogIn } from 'lucide-react';
 
 type HeaderProps = {
   title: string;
 };
 
 export function Header({ title }: HeaderProps) {
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
 
   return (
     <header className="flex h-14 items-center justify-between gap-4 border-b bg-background/80 px-4 backdrop-blur-sm lg:h-[60px] lg:px-6">
       <MobileSidebar />
       <h1 className="flex-1 text-lg font-semibold md:text-2xl font-headline">{title}</h1>
-      {user && (
+      
+      {loading ? (
+        <div className="h-8 w-8 rounded-full bg-muted animate-pulse" />
+      ) : user ? (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -50,6 +55,13 @@ export function Header({ title }: HeaderProps) {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+      ) : (
+        <Button asChild variant="outline">
+            <Link href="/login">
+                <LogIn className="mr-2 h-4 w-4" />
+                Sign In
+            </Link>
+        </Button>
       )}
     </header>
   );

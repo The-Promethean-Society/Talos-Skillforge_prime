@@ -10,7 +10,6 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import { auth } from '@/lib/firebase';
-import { useRouter } from 'next/navigation';
 
 interface AuthContextType {
   user: User | null;
@@ -29,9 +28,16 @@ const AuthContext = createContext<AuthContextType>({
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
+    // This effect runs once on mount to handle the redirect result from Firebase.
+    getRedirectResult(auth)
+      .catch((error) => {
+        // This error can be ignored. It often happens on page load if there's no pending redirect.
+        console.warn('Firebase getRedirectResult error on initial load:', error.code);
+      });
+
+    // This listener is the source of truth for the user's auth state.
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
@@ -40,29 +46,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result?.user) {
-          // Successfully signed in. Redirect to the dashboard.
-          router.push('/dashboard');
-        }
-      })
-      .catch((error) => {
-        // This error can be ignored. It often happens on page load if there's no pending redirect.
-        console.warn('Firebase getRedirectResult error:', error.code);
-      })
-      .finally(() => {
-        // In a real app, you might set another loading state here, but for now, this is fine.
-      });
-  }, [router]);
-
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    setLoading(true); // Set loading to true before redirecting
+    setLoading(true);
     try {
+      // We will redirect to the Google sign-in page.
+      // The onAuthStateChanged listener will handle the user state when they return.
       await signInWithRedirect(auth, provider);
-      // The page will redirect, and the effect above will handle the result.
     } catch (error) {
       console.error('Error signing in with Google:', error);
       setLoading(false);
@@ -73,7 +63,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setLoading(true);
     try {
       await signOut(auth);
-      router.push('/login');
+      // No need to redirect here, the onAuthStateChanged listener will update the user to null.
+      setLoading(false);
     } catch (error) {
       console.error('Error signing out:', error);
       setLoading(false);
