@@ -1,41 +1,39 @@
 
-import NextAuth, { NextAuthOptions } from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
+// src/app/api/auth/[...nextauth]/route.ts
 
-if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
-  throw new Error('Missing Google OAuth environment variables');
+/**
+ * This route handler is a proxy for the standalone authentication service.
+ * It forwards all requests to the auth-service container, which handles the actual
+ * NextAuth.js logic.
+ *
+ * The NEXTAUTH_URL_INTERNAL environment variable is set in the docker-compose.yml file
+ * to point to the internal address of the auth-service.
+ */
+async function handler(req: Request) {
+  // The original URL, e.g., /api/auth/session
+  const url = new URL(req.url);
+  const internalAuthServiceUrl = process.env.NEXTAUTH_URL_INTERNAL;
+
+  if (!internalAuthServiceUrl) {
+    console.error('FATAL: NEXTAUTH_URL_INTERNAL is not set. The auth proxy cannot function.');
+    return new Response('Authentication service is misconfigured.', { status: 500 });
+  }
+
+  // Create the new URL for the internal auth service
+  const proxyUrl = new URL(`${internalAuthServiceUrl}${url.pathname}${url.search}`);
+
+  // Forward the request to the auth service
+  // We create a new Request object to avoid issues with reusing the original one
+  const proxyResponse = await fetch(proxyUrl.toString(), {
+    method: req.method,
+    headers: req.headers,
+    body: req.method !== 'GET' && req.method !== 'HEAD' ? await req.text() : undefined,
+    redirect: 'manual', // Let the browser handle redirects based on the auth service's response
+  });
+
+  // Forward the response from the auth service back to the client
+  return proxyResponse;
 }
 
-export const authOptions: NextAuthOptions = {
-  providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-  ],
-  secret: process.env.NEXTAUTH_SECRET,
-  callbacks: {
-    async session({ session, token }) {
-      // Pass user ID and other properties from the token to the session
-      if (token) {
-        session.user.id = token.id as string;
-      }
-      return session;
-    },
-    async jwt({ token, user }) {
-       // On sign-in, add user ID to the token
-      if (user) {
-        token.id = user.id;
-      }
-      return token;
-    },
-  },
-  pages: {
-    signIn: '/login',
-    error: '/login', // Redirect to login page on error
-  }
-};
-
-const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
+

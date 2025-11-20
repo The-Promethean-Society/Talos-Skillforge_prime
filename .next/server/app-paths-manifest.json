@@ -1,8 +1,0 @@
-{
-  "/(app)/competencies/page": "app/(app)/competencies/page.js",
-  "/(app)/dashboard/page": "app/(app)/dashboard/page.js",
-  "/(app)/settings/page": "app/(app)/settings/page.js",
-  "/(app)/tutor/page": "app/(app)/tutor/page.js",
-  "/api/auth/[...nextauth]/route": "app/api/auth/[...nextauth]/route.js",
-  "/page": "app/page.js"
-}
