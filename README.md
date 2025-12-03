@@ -1,4 +1,4 @@
-# 🏛️ Talosopolis (Talos-Skillforge_prime)
+# 🏛️ SkillForge Prime (Skillforge_prime)
 
 **An AI-Powered Skill-Forging Platform for Adaptive Learning**
 
@@ -29,8 +29,8 @@ Talosopolis is a next-generation education platform designed to provide truly pe
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/The-Promethean-Society/Talos-Skillforge_prime.git](https://github.com/The-Promethean-Society/Talos-Skillforge_prime.git)
-    cd Talos-Skillforge_prime
+    git clone [https://github.com/The-Promethean-Society/Skillforge_prime.git](https://github.com/The-Promethean-Society/Skillforge_prime.git)
+    cd Skillforge_prime
     ```
 2.  **Install dependencies:**
     ```bash
